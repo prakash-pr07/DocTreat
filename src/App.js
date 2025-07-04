@@ -24,7 +24,7 @@ const App = () => {
         </Routes>
       </div>
 
-      {/* ✅ ToastContainer should be outside Routes */}
+      {/*  ToastContainer should be outside Routes */}
       <ToastContainer position="top-center" autoClose={2000} />
     </Router>
   );
