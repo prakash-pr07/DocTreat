@@ -142,8 +142,8 @@ const SignupPage = () => {
 
         <select name="role" value={formData.role} onChange={handleChange} required className="w-full p-2 border rounded">
           <option value="">Select Role</option>
-          <option value="Client">Patient</option>
-          <option value="Lawyer">Doctor</option>
+          <option value="Patient">Patient</option>
+          <option value="Doctor">Doctor</option>
         </select>
 
         <button

@@ -126,7 +126,7 @@ export const signup = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error("Signup error:", error);
+    console.error("Signup error:", error.message);
     return res.status(500).json({ success: false, message: "Signup failed" });
   }
 };
