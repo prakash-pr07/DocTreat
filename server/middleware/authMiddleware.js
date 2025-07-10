@@ -1,9 +1,18 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
-//  Middleware to check if user is authenticated
+// ✅ Middleware to check if user is authenticated
 export const isAuthenticated = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  // const token = req.headers.authorization?.split(" ")[1];
+  // const token = req.cookies.token;
+
+
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies?.token) {
+    token = req.cookies.token;
+  }
+
   if (!token) {
     return res.status(401).json({ message: "Unauthorized - Token missing" });
   }
@@ -20,6 +29,8 @@ export const isAuthenticated = async (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+
+
 
 // Check if user is Admin
 export const isAdmin = (req, res, next) => {
