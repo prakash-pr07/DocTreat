@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
-// ✅ Middleware to check if user is authenticated
+//  Middleware to check if user is authenticated
 export const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
@@ -21,15 +21,16 @@ export const isAuthenticated = async (req, res, next) => {
   }
 };
 
-// ✅ Check if user is Client
-export const isPatient = (req, res, next) => {
-  if (req.user.role !== "Client") {
-    return res.status(403).json({ message: "Access denied. Patient only." });
+// Check if user is Admin
+export const isAdmin = (req, res, next) => {
+  if (req.user.role !== "Admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
   }
   next();
 };
 
-// ✅ Check if user is Lawyer
+
+// Optional: Check if user is Doctor
 export const isDoctor = (req, res, next) => {
   if (req.user.role !== "Doctor") {
     return res.status(403).json({ message: "Access denied. Doctors only." });
@@ -37,18 +38,18 @@ export const isDoctor = (req, res, next) => {
   next();
 };
 
-// ✅ Check if user is Admin
-export const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied. Admins only." });
+//  Optional: Check if user is Patient
+export const isPatient = (req, res, next) => {
+  if (req.user.role !== "Patient") {
+    return res.status(403).json({ message: "Access denied. Patients only." });
   }
   next();
 };
 
-// ✅ Check if user is Premium
+// Check if user is Premium (e.g., paid member)
 export const checkPremium = (req, res, next) => {
   if (!req.user?.isPremium) {
-    return res.status(403).json({ message: "Access denied. Premium only." });
+    return res.status(403).json({ message: "Access denied. Premium members only." });
   }
   next();
 };
