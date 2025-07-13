@@ -1,6 +1,8 @@
-// src/pages/ConnectDoctors.js
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const ConnectDoctors = () => {
   const [city, setCity] = useState("");
@@ -10,25 +12,21 @@ const ConnectDoctors = () => {
   const handleSearch = async () => {
     if (!city.trim()) return;
 
-    console.log("Searching doctors in:", city);
-
     try {
       const res = await fetch(
         `http://localhost:8000/api/v1/doctors/search/city?city=${city}`
       );
       const data = await res.json();
 
-      console.log("API Response:", data);
-
       if (res.ok && data.success) {
         setDoctors(data.doctors);
       } else {
         setDoctors([]);
-        alert(data.message || "No doctors found.");
+        toast.error(data.message || "No doctors found.");
       }
     } catch (error) {
       console.error("Search Error:", error);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.");
     }
   };
 
@@ -42,23 +40,42 @@ const ConnectDoctors = () => {
     );
   };
 
+  const handleConnectClick = (doc) => {
+    const userData = localStorage.getItem("user");
+
+    if (!userData) {
+      toast.warning("Please login first to connect with a doctor.");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+
+    if (!user.isPremium) {
+      toast.warning("Please Be A Premium Member first.");
+      return;
+    }
+
+    navigate(`/doctor/${doc._id}`, { state: { doctor: doc } });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-3xl font-bold text-center mb-6 text-blue-800">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+      <ToastContainer position="top-center" />
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-blue-800">
         Find Doctors by City
       </h2>
 
-      <div className="flex justify-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-6">
         <input
           type="text"
           placeholder="Enter city name..."
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="border px-4 py-2 rounded-l w-64"
+          className="border px-4 py-2 rounded w-64 sm:w-72"
         />
         <button
           onClick={handleSearch}
-          className="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
         >
           Search
         </button>
@@ -84,11 +101,11 @@ const ConnectDoctors = () => {
               {formatName(doc.firstName, doc.lastName)}
             </h3>
             <button
-            onClick={() => navigate(`/doctor/${doc._id}`, { state: { doctor: doc } })}
-            className="mt-3 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600">
-            Connect
+              onClick={() => handleConnectClick(doc)}
+              className="mt-3 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 w-full"
+            >
+              Connect
             </button>
-
           </div>
         ))}
       </div>
