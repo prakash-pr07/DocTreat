@@ -1,45 +1,64 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // 👈 triggers re-render on route change
+  const location = useLocation();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     setUser(storedUser ? JSON.parse(storedUser) : null);
-  }, [location]); // 👈 this makes it reactive on login/logout
+  }, [location]);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
   };
 
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Ask AI", path: "/ask-ai" },
+    { name: "Connect Doctors", path: "/connect-doctors" },
+    {
+      name: "Dashboard",
+      path: user?.role === "Doctor" ? "/doctor/dashboard" : "/patient/dashboard",
+    },
+  ];
+
   return (
-    <nav className="bg-blue-300 text-white px-6 py-3 flex justify-between items-center shadow-md">
-      <div className="text-2xl font-bold text-white">
+    <nav className="border-4 border-black bg-gradient-to-br from-purple-800 to-blue-800 text-white px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row justify-between items-center shadow-lg">
+      {/* Logo */}
+      <div className="text-2xl font-bold mb-3 sm:mb-0">
         <span className="text-white">Doc</span>
         <span className="text-yellow-300">Treat</span>
       </div>
 
-      <div className="flex-1 flex justify-center space-x-6 text-lg">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/chatbot" className="hover:underline">Ask AI</Link>
-        <Link to="/connect-doctors" className="hover:underline">Connect Doctors</Link>
-        <Link to={user?.role === "Doctor" ? "/doctor/dashboard" : "/patient/dashboard"} className="hover:underline">Dashboard</Link>
+      {/* Nav Links */}
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm sm:text-base font-semibold mb-3 sm:mb-0">
+        {navLinks.map((link) => (
+          <Link
+            key={link.name}
+            to={link.path}
+            className="px-3 sm:px-4 py-1 border-2 border-black text-black bg-white rounded shadow-md hover:bg-gradient-to-br hover:from-purple-800 hover:to-blue-800 hover:text-white transition-all duration-200"
+          >
+            {link.name}
+          </Link>
+        ))}
       </div>
 
-      <div className="space-x-4">
+      {/* Auth Buttons */}
+      <div className="flex gap-2">
         {!user ? (
           <>
             <Link to="/signup">
-              <button className="bg-white text-blue-700 px-4 py-1 rounded hover:bg-blue-100">
+              <button className="px-3 sm:px-4 py-1 font-bold border-2 border-black text-black bg-white rounded shadow-md hover:bg-gradient-to-br hover:from-purple-800 hover:to-blue-800 hover:text-white transition-all duration-200">
                 Sign Up
               </button>
             </Link>
             <Link to="/login">
-              <button className="bg-blue-700 px-4 py-1 rounded hover:bg-blue-800">
+              <button className="px-3 sm:px-4 py-1 font-bold border-2 border-black text-black bg-white rounded shadow-md hover:bg-gradient-to-br hover:from-purple-800 hover:to-blue-800 hover:text-white transition-all duration-200">
                 Login
               </button>
             </Link>
@@ -47,7 +66,7 @@ const Navbar = () => {
         ) : (
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 px-4 py-1 rounded text-white"
+            className="px-3 sm:px-4 py-1 font-bold border-2 border-black text-black bg-white rounded shadow-md hover:bg-gradient-to-br hover:from-purple-800 hover:to-blue-800 hover:text-white transition-all duration-200"
           >
             Logout
           </button>
