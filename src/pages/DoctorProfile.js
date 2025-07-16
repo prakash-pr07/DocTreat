@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -37,28 +38,36 @@ const DoctorProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-yellow-50 flex justify-center items-start py-10 px-4">
-      <div className="bg-white shadow-lg rounded-lg p-8 max-w-2xl w-full">
+    <div className="min-h-screen bg-black flex justify-center items-center px-4 py-10">
+      <div
+        className="bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-800 
+        p-8 rounded-xl max-w-2xl w-full text-white
+        shadow-[0_0_40px_rgba(139,92,246,0.4)] 
+        hover:shadow-[0_0_60px_rgba(96,165,250,0.5)] 
+        border-[3px] border-transparent 
+        outline outline-2 outline-purple-500/30 
+        transition-all duration-1000 ease-in-out"
+      >
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-24 h-24 rounded-full bg-blue-200 flex items-center justify-center text-2xl font-bold text-blue-800">
+          <div className="w-24 h-24 rounded-full bg-white text-purple-700 flex items-center justify-center text-2xl font-bold shadow-md">
             {getInitials(doctor.firstName, doctor.lastName)}
           </div>
 
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold">
             {doctor.firstName.charAt(0).toUpperCase() + doctor.firstName.slice(1)}{" "}
             {doctor.lastName.charAt(0).toUpperCase() + doctor.lastName.slice(1)}
           </h2>
 
-          <p className="text-gray-700">
+          <p>
             <strong>Email:</strong> {doctor.email}
           </p>
-          <p className="text-gray-700">
+          <p>
             <strong>Phone:</strong> {doctor.phoneNo}
           </p>
-          <p className="text-gray-700">
+          <p>
             <strong>City:</strong> {doctor.city}
           </p>
-          <p className="text-gray-700">
+          <p>
             <strong>State:</strong> {doctor.state}
           </p>
 
