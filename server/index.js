@@ -11,9 +11,12 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import { connect } from "./config/database.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 
+import doctorDocumentRoutes from "./routes/doctorDocumentRoutes.js";
 import medicalNoteRoutes from "./routes/medicalNoteRoutes.js";
 import http from "http";
 import { initSocket } from "./utils/socket.js"; //  Import socket initializer
+
+
 
 dotenv.config();
 const app = express();
@@ -40,6 +43,7 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/appointment", appointmentRoutes);
 
 app.use("/api/medical-notes", medicalNoteRoutes);
+app.use("/api/doctor", doctorDocumentRoutes);
 
 // 👇 Start server
 const PORT = process.env.PORT || 8000;
