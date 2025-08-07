@@ -51,9 +51,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-black">
+    <div className="min-h-screen flex flex-col md:flex-row bg-white">
       {/* ✅ Left - Image */}
-      <div className="md:w-1/2 w-full flex items-center justify-center bg-black">
+      <div className="md:w-1/2 w-full flex items-center justify-center bg-white">
         <div className="w-3/4 h-3/4 rounded-xl overflow-hidden
           shadow-[0_0_40px_rgba(139,92,246,0.4)]
           hover:shadow-[0_0_60px_rgba(96,165,250,0.5)]

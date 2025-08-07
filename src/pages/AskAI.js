@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import axios from "axios";
 import { FaPaperPlane } from "react-icons/fa";
@@ -41,7 +42,7 @@ const AskAI = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-10">
       <div
         className="w-full max-w-4xl bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-800  rounded-xl shadow-[0_0_40px_rgba(139,92,246,0.4)]
         hover:shadow-[0_0_60px_rgba(96,165,250,0.5)]

@@ -1,105 +1,142 @@
-// src/pages/Home.js
-import React from "react";
+
+import React, { useState } from "react";
+import Footer from "../components/Footer";
 
 const Home = () => {
-  const cardData = [
-    {
-      title: "AI Medical Assistant",
-      description: "Ask health-related questions to AI instantly.",
-    },
-    {
-      title: "Find a Doctor",
-      description: "Search doctors by city and view their profiles.",
-    },
-    {
-      title: "Live Chat",
-      description: "Talk to your doctor in real-time using chat.",
-    },
-    {
-      title: "Book Appointment",
-      description: "Fix appointments and get email confirmations.",
-    },
+  const navbarLinks = [
+    { name: "Home", path: "/", description: "Go to the homepage." },
+    { name: "Ask AI", path: "/ask-ai", description: "Chat with our AI medical assistant." },
+    { name: "Connect Doctors", path: "/connect-doctors", description: "Find doctors in your city." },
+    { name: "Login", path: "/login", description: "Login to your account." },
+    { name: "Signup", path: "/signup", description: "Create a new account." },
   ];
 
-  const dummyDoctors = [
+  const features = [
     {
-      name: "Dr. Meera Sharma",
-      profile: "/images/doctor1.png",
+      icon: "🔍",
+      title: "Search a Doctor",
+      description: "Real-time discovery with trusted doctors."
     },
     {
-      name: "Dr. Arjun Patel",
-      profile: "/images/doctor2.png",
+      icon: "📅",
+      title: "Book an Appointment",
+      description: "Easy, fast, and secure doctor bookings."
     },
     {
-      name: "Dr. Sneha Reddy",
-      profile: "/images/doctor3.png",
+      icon: "📤",
+      title: "Upload & Track Medical Docs",
+      description: "Stay organized with all your health records."
     },
+    {
+      icon: "⭐",
+      title: "Premium Access for Direct Connection",
+      description: "Instant communication with top specialists."
+    }
   ];
+
+  const faqs = [
+    {
+      question: "What is DocTreat?",
+      answer: "DocTreat is a digital healthcare platform connecting patients with certified doctors across India."
+    },
+    {
+      question: "How do I book an appointment?",
+      answer: "Simply search for a doctor by city or specialty, select a time slot, and confirm your booking."
+    },
+    {
+      question: "What is Premium membership?",
+      answer: "Premium gives you faster access to top doctors and priority support for just ₹10."
+    },
+    {
+      question: "How can I maintain my medical records?",
+      answer: "You can upload prescriptions, reports, and track your health history from your dashboard."
+    },
+    {
+      question: "How do I trust that these are verified doctors?",
+      answer: "Every doctor on DocTreat is verified through official documentation and medical board certifications."
+    }
+  ];
+
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
-    <div className="bg-white min-h-screen flex flex-col items-center pt-2 pb-6 space-y-[1vh]">
-      {/* First Section - Intro */}
-      <div className="w-[80vw] h-[60vh] border border-gray-500 rounded-lg p-6 shadow-lg text-white bg-gradient-to-br from-purple-800 to-blue-800 flex">
-        <div className="w-1/2 pr-6 flex flex-col justify-center">
-          <h1 className="text-4xl font-bold mb-4 text-yellow-300">Welcome to DocTreat</h1>
-          <p className="text-lg text-white leading-relaxed">
-            <strong>DocTreat</strong> is your digital healthcare companion.
-            It helps you <strong>instantly chat with doctors</strong>, ask <strong>AI-powered medical questions</strong>,
-            and book <strong>real-time appointments</strong> — all in one place. With smart features and a clean interface,
-            DocTreat brings healthcare to your fingertips, anytime, anywhere.
-          </p>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow bg-white flex flex-col items-center pt-10 pb-10 space-y-12">
+        {/* Hero Section */}
+        <div className="w-[90vw] max-w-7xl border border-gray-300 rounded-2xl p-8 shadow-xl bg-gradient-to-br from-purple-900 to-blue-900 text-white flex flex-col lg:flex-row items-center">
+          <div className="lg:w-1/2 space-y-6">
+            <h1 className="text-5xl font-extrabold text-yellow-300">Your Health, Simplified</h1>
+            <p className="text-lg leading-relaxed">
+              With <strong>DocTreat</strong>, instantly connect with expert doctors, ask AI-powered health questions, and manage your wellness from anywhere. Hassle-free, secure, and always accessible.
+            </p>
+          </div>
+          <div className="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
+            <img src="/images/doctor.png" alt="Doctor" className="w-[300px] h-auto object-contain rounded-xl shadow-2xl" />
+          </div>
         </div>
 
-        <div className="w-1/2 flex justify-center items-center p-[5%]">
-          <img
-            src="/images/doctor.png"
-            alt="Doctor"
-            className="rounded-lg shadow-2xl w-[90%] h-[90%] object-contain"
-          />
-        </div>
-      </div>
-
-      {/* Cards */}
-      {cardData.map((card, index) => (
-        <div
-          key={index}
-          className="w-[80vw] h-[60vh] border border-gray-500 rounded-lg p-6 shadow-lg text-white 
-                   bg-gradient-to-br from-purple-800 to-blue-800 hover:brightness-110 transition-all duration-300
-                   flex flex-col justify-center cursor-pointer"
-        >
-          {index !== 1 ? (
-            <>
-              <h2 className="text-3xl font-bold mb-4 text-yellow-300">{card.title}</h2>
-              <p className="text-white text-lg font-medium">{card.description}</p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-3xl font-bold mb-2 text-yellow-300">Meet Our Top Doctors</h2>
-              <p className="text-white text-lg mb-6">
-                Trusted professionals ready to help. Here are a few of them:
-              </p>
-
-              <div className="flex justify-between gap-4">
-                {dummyDoctors.map((doc, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center bg-white text-black rounded-lg p-4 w-1/3 shadow-md border border-gray-400"
-                  >
-                    <img
-                      src={doc.profile}
-                      alt={doc.name}
-                      className="w-20 h-20 rounded-full object-cover mb-2"
-                    />
-                    <h4 className="font-semibold text-lg text-center">{doc.name}</h4>
-                  </div>
-                ))}
+        {/* Why Choose DocTreat */}
+        <div className="w-[90vw] max-w-7xl border border-gray-300 rounded-2xl p-8 shadow-md bg-gradient-to-br from-purple-800 to-blue-800 text-white">
+          <h2 className="text-3xl font-bold text-center text-yellow-300 mb-8">Why Choose DocTreat</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {features.map((feature, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-xl transition-all text-black">
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-purple-700 mb-2">{feature.title}</h3>
+                <p className="text-sm text-gray-600">{feature.description}</p>
               </div>
-            </>
-          )}
+            ))}
+          </div>
         </div>
-      ))}
+
+        {/* Reviews Section */}
+        <div className="w-[90vw] max-w-7xl border border-gray-300 rounded-2xl p-8 shadow-md bg-gradient-to-br from-purple-800 to-blue-800 text-white">
+          <h2 className="text-3xl font-bold text-center text-yellow-300 mb-6">What Patients Are Saying</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { name: "Ravi Verma", text: "Very helpful platform. Booking was quick and easy!" },
+              { name: "Anjali Desai", text: "The AI assistant gave surprisingly accurate suggestions." },
+              { name: "Karan Mehta", text: "Found a great doctor in my area within minutes." },
+            ].map((review, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-xl shadow-lg text-black">
+                <p className="italic mb-2">“{review.text}”</p>
+                <p className="text-right font-bold text-purple-700">- {review.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="w-[90vw] max-w-7xl border border-gray-300 rounded-2xl p-8 shadow-lg bg-gradient-to-br from-purple-800 to-blue-800 text-white">
+          <h2 className="text-3xl font-bold text-center text-yellow-300 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={index}>
+                <button
+                  className="w-full text-left p-4 bg-white text-black rounded-md shadow hover:bg-purple-700 hover:text-white transition-all"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <span className="font-semibold text-lg">{faq.question}</span>
+                </button>
+                {openIndex === index && (
+                  <div className="p-4 bg-purple-100 text-black rounded-b-md">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };
 
 export default Home;
+

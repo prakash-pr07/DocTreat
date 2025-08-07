@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+
 const SignupPage = () => {
   const navigate = useNavigate();
 
@@ -202,9 +203,11 @@ const SignupPage = () => {
           />
         </div>
       </div>
-
+      
     </div>
   );
 };
 
 export default SignupPage;
+
+

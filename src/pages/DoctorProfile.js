@@ -28,11 +28,6 @@ const DoctorProfile = () => {
     );
   };
 
-  const handleStartChat = () => {
-    localStorage.setItem("chatWith", JSON.stringify(doctor));
-    navigate("/patient/dashboard");
-  };
-
   const handleBookAppointment = () => {
     navigate("/book-appointment", { state: { doctor } });
   };
@@ -70,14 +65,6 @@ const DoctorProfile = () => {
           <p>
             <strong>State:</strong> {doctor.state}
           </p>
-
-          {/* ✅ Chat Button */}
-          <button
-            className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            onClick={handleStartChat}
-          >
-            Chat With Me
-          </button>
 
           {/* 🆕 Book Appointment Button */}
           <button

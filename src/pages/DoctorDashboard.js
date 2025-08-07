@@ -1,10 +1,12 @@
 
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 import { io } from "socket.io-client";
-import ChatBox from "../components/ChatBox";
+import MedicalHistoryPanel from "../components/MedicalHistoryPanel";
 
-// 🔌 Initialize socket
 const socket = io("http://localhost:8000", {
   withCredentials: true,
   transports: ["websocket"],
@@ -13,24 +15,22 @@ const socket = io("http://localhost:8000", {
 const DoctorDashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [chatWith, setChatWith] = useState(null); // 🧑‍⚕️ Chatting with this Patient
+
+  const [patientName, setPatientName] = useState("");
+  const [patientEmail, setPatientEmail] = useState("");
+  const [notes, setNotes] = useState("");
+  const [document, setDocument] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyNotes, setHistoryNotes] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const storedChatWith = localStorage.getItem("chatWith");
-
     if (!storedUser) {
       navigate("/login");
     } else {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-
-      // ✅ Register user (doctor) with their email on socket
       socket.emit("addUser", parsedUser.email);
-    }
-
-    if (storedChatWith) {
-      setChatWith(JSON.parse(storedChatWith));
     }
   }, [navigate]);
 
@@ -49,23 +49,88 @@ const DoctorDashboard = () => {
       : parts[0][0].toUpperCase();
   };
 
+  const handleUpload = async () => {
+    if (!patientName || !patientEmail || !document) {
+      toast.error("All fields including document are required");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", patientName);
+    formData.append("email", patientEmail);
+    formData.append("notes", notes);
+    formData.append("document", document);
+
+    try {
+      const res = await axios.post("/api/doctor/upload-document", formData);
+
+      if (res.status === 200 || res.status === 201) {
+        toast.success("✅ Document Uploaded Successfully");
+      } else {
+        toast.error("Unexpected response. Please try again.");
+      }
+
+      setPatientName("");
+      setPatientEmail("");
+      setNotes("");
+      setDocument(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Upload Failed");
+    }
+
+    // --- OR Use This Toast UX instead ---
+    /*
+    try {
+      await toast.promise(
+        axios.post("/api/doctor/upload-document", formData),
+        {
+          loading: "Uploading...",
+          success: "✅ Document Uploaded Successfully",
+          error: "❌ Upload Failed",
+        }
+      );
+
+      setPatientName("");
+      setPatientEmail("");
+      setNotes("");
+      setDocument(null);
+    } catch (err) {
+      console.error(err);
+    }
+    */
+  };
+
+  const fetchHistory = async () => {
+    try {
+      const res = await axios.get(
+        `/api/documents/history-by-doctor?doctorEmail=${user.email}`
+      );
+      setHistoryNotes(res.data);
+      setShowHistory(true);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to Load History");
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)] w-full">
-      {/* Left Panel - Doctor Info */}
-      <div className="w-1/4 bg-gray-100 p-6 border-r border-gray-300">
+      {/* Left Sidebar */}
+      <div className="w-1/4 p-6 bg-gray-50 border-r border-gray-200 overflow-y-auto">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-blue-500 text-white flex items-center justify-center text-xl font-bold">
+          <div className="w-14 h-14 bg-blue-600 text-white text-xl rounded-full flex items-center justify-center font-bold">
             {getInitials(user.firstName + " " + user.lastName)}
           </div>
           <div>
-            <h2 className="text-lg font-semibold">
+            <h2 className="font-semibold text-lg">
               {user.firstName} {user.lastName}
             </h2>
-            <p className="text-sm text-gray-500">Doctor</p>
+            <p className="text-sm text-gray-600">Doctor</p>
           </div>
         </div>
 
-        <div className="text-sm text-gray-700 space-y-1">
+        <div className="text-sm text-gray-800 space-y-1">
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Phone:</strong> {user.phoneNo}</p>
           <p><strong>City:</strong> {user.city}</p>
@@ -73,20 +138,67 @@ const DoctorDashboard = () => {
         </div>
       </div>
 
-      {/* Center Panel - Placeholder */}
-      <div className="w-1/2 flex flex-col items-center justify-center p-8">
-        <h1 className="text-2xl font-bold mb-4">Medical History</h1>
-        <p className="text-gray-500">No Medical History</p>
+      {/* Center Section */}
+      <div className="w-1/2 p-6 overflow-y-auto flex flex-col items-center">
+        {!showHistory ? (
+          <>
+            <div className="text-gray-400 text-center mt-20 mb-6">
+              Document history not yet opened.
+            </div>
+            <button
+              onClick={fetchHistory}
+              className="bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded transition"
+            >
+              See Patient History
+            </button>
+          </>
+        ) : (
+          <MedicalHistoryPanel notes={historyNotes} />
+        )}
       </div>
 
-      {/* Right Panel - Chat Box */}
-      <div className="w-1/4 border-l border-gray-300 bg-gray-50 p-2 flex flex-col">
-         <h3 className="text-center font-semibold mb-2">Real-Time Chat</h3>
-         <div className="flex-1 overflow-y-auto">
-          {/* ✅ Always render ChatBox if user is set */}
-          <ChatBox currentUserEmail={user.email} />
-         </div>
-       </div>
+      {/* Right Upload Panel */}
+      <div className="w-1/4 p-5 border-l border-gray-200 bg-gradient-to-br from-white to-purple-50">
+        <h2 className="text-center text-lg font-semibold text-purple-700 mb-4">
+          Upload Patient Document
+        </h2>
+
+        <input
+          type="text"
+          placeholder="File Name / Patient Name"
+          value={patientName}
+          onChange={(e) => setPatientName(e.target.value)}
+          className="w-full mb-2 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+        />
+
+        <input
+          type="email"
+          placeholder="Patient Email"
+          value={patientEmail}
+          onChange={(e) => setPatientEmail(e.target.value)}
+          className="w-full mb-2 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+        />
+
+        <textarea
+          placeholder="Mark Your Points"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full mb-2 px-3 py-2 border rounded resize-none h-24 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        />
+
+        <input
+          type="file"
+          onChange={(e) => setDocument(e.target.files[0])}
+          className="mb-3"
+        />
+
+        <button
+          onClick={handleUpload}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded mb-3 transition"
+        >
+          Upload
+        </button>
+      </div>
     </div>
   );
 };

@@ -4,9 +4,10 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import ChatBox from "../components/ChatBox";
+import DocumentUploadPanel from "../components/DocumentUploadPanel";
+import MedicalHistoryPanel from "../components/MedicalHistoryPanel";
 import "react-toastify/dist/ReactToastify.css";
 
-// Razorpay script load only once
 if (typeof window !== "undefined" && !window.Razorpay) {
   const script = document.createElement("script");
   script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -22,6 +23,7 @@ const socket = io("http://localhost:8000", {
 const PatientDashboard = () => {
   const [user, setUser] = useState(null);
   const [chatWith, setChatWith] = useState(null);
+  const [medicalNotes, setMedicalNotes] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -98,6 +100,17 @@ const PatientDashboard = () => {
     }
   };
 
+  const handleSeeMedicalHistory = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:8000/api/medical-notes/${user._id}`
+      );
+      setMedicalNotes(data.notes);
+    } catch (err) {
+      toast.error("Failed to load history");
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen text-2xl font-bold">
@@ -115,7 +128,7 @@ const PatientDashboard = () => {
       <ToastContainer position="top-center" />
 
       {/* 🧑‍⚕️ Left - Patient Info */}
-      <div className="w-full md:w-1/4 bg-blue-50 p-6 border-r border-gray-300">
+      <div className="w-full md:w-1/4 bg-blue-50 p-6 border-r border-gray-300 flex flex-col justify-between">
         <div className="flex flex-col items-center space-y-4">
           <div className="w-20 h-20 rounded-full bg-blue-700 text-white flex items-center justify-center text-2xl font-bold">
             {initials}
@@ -129,30 +142,28 @@ const PatientDashboard = () => {
             {user.city}, {user.state}
           </div>
 
-          {/* ✅ Premium Button */}
           {!user.isPremium && (
             <button
               onClick={handleBuyPremium}
               className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded w-full text-center"
             >
-              Buy Premium ₹10
+              Buy Premium
             </button>
           )}
         </div>
       </div>
 
-      {/* 📋 Center - Placeholder Section */}
-      <div className="w-full md:w-1/2 p-8 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold mb-4">Medical History</h2>
-        <p className="text-gray-600">No Medical History</p>
+      {/* 📋 Center - Medical History Viewer */}
+      <div className="w-full md:w-1/2 p-6 overflow-y-auto">
+        <MedicalHistoryPanel notes={medicalNotes} />
       </div>
 
-      {/* 💬 Right Panel - Chat Box */}
-      <div className="w-full md:w-1/4 border-t md:border-t-0 md:border-l border-gray-300 bg-gray-50 p-2 flex flex-col">
-        <h3 className="text-center font-semibold mb-2">Real-Time Chat</h3>
-        <div className="flex-1 overflow-y-auto">
-          <ChatBox currentUserEmail={user.email} />
-        </div>
+      {/* 📤 Right - Upload Panel */}
+      <div className="w-full md:w-1/4 border-t md:border-t-0 md:border-l border-gray-300 bg-gray-50 p-2">
+        <DocumentUploadPanel
+          userId={user._id}
+          onSeeHistory={handleSeeMedicalHistory}
+        />
       </div>
     </div>
   );

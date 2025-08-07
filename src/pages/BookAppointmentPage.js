@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -23,16 +24,14 @@ const BookAppointmentPage = () => {
   const [otpVerified, setOtpVerified] = useState(false);
 
   const handleChange = (e) => {
-  let { name, value } = e.target;
+    let { name, value } = e.target;
 
-  // ✅ Sanitize email to remove accidental extra @
-  if (name === "email") {
-    value = value.replace(/@+/g, "@");  // 🛠️ Fix double @@
-  }
+    if (name === "email") {
+      value = value.replace(/@+/g, "@");
+    }
 
-  setFormData({ ...formData, [name]: value });
-};
-
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleSubmit = async () => {
     try {
@@ -41,13 +40,10 @@ const BookAppointmentPage = () => {
         doctorEmail: doctor.email,
       });
 
-      console.log("Verifying OTP with email:", doctor.email);
-
-
       if (res.data.success) {
-        localStorage.setItem("doctorEmail", doctor.email); // ✅ Store doctor email safely
+        localStorage.setItem("doctorEmail", doctor.email);
         toast.success("OTP sent to doctor for appointment confirmation");
-        setShowOtpSection(true); // ✅ Show OTP section after booking
+        setShowOtpSection(true);
       } else {
         toast.error(res.data.message);
       }
@@ -57,37 +53,30 @@ const BookAppointmentPage = () => {
     }
   };
 
+  const handleOtpVerify = async () => {
+    try {
+      const email = localStorage.getItem("doctorEmail");
+      if (!email) {
+        toast.error("Doctor email not found. Please try again.");
+        return;
+      }
 
-  
-const handleOtpVerify = async () => {
-  try {
-    const email = localStorage.getItem("doctorEmail");
+      const res = await axios.post("http://localhost:8000/api/appointment/verify-otp", {
+        email,
+        otp
+      });
 
-    if (!email) {
-      toast.error("Doctor email not found. Please try again.");
-      return;
+      if (res.data.success) {
+        toast.success("OTP Verified! Now confirm the appointment.");
+        setOtpVerified(true);
+      } else {
+        toast.error(res.data.message || "Invalid OTP");
+      }
+    } catch (err) {
+      console.error("OTP Verification Error:", err);
+      toast.error("Failed to verify OTP");
     }
-
-    console.log("🔍 Sending OTP verify request with email:", email);
-
-    const res = await axios.post("http://localhost:8000/api/appointment/verify-otp", {
-      email,
-      otp,
-    });
-
-    if (res.data.success) {
-      toast.success("OTP Verified! Now confirm the appointment.");
-      setOtpVerified(true);
-    } else {
-      toast.error(res.data.message || "Invalid OTP");
-    }
-  } catch (err) {
-    console.error("OTP Verification Error:", err);
-    toast.error("Failed to verify OTP");
-  }
-};
-
-
+  };
 
   const handleConfirmAppointment = async () => {
     try {
@@ -109,11 +98,19 @@ const handleOtpVerify = async () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black p-6">
       <ToastContainer />
-      <h2 className="text-2xl font-bold mb-6 text-blue-800">Book Appointment</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white">Book Appointment</h2>
 
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md space-y-4">
+      <div
+        className="bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-800 
+        p-8 rounded-xl max-w-md w-full text-white
+        shadow-[0_0_40px_rgba(139,92,246,0.4)] 
+        hover:shadow-[0_0_60px_rgba(96,165,250,0.5)] 
+        border-[3px] border-transparent 
+        outline outline-2 outline-purple-500/30 
+        transition-all duration-1000 ease-in-out space-y-4"
+      >
         {["name", "age", "phoneNo", "email", "date"].map((field) => (
           <input
             key={field}
@@ -122,7 +119,7 @@ const handleOtpVerify = async () => {
             placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
             value={formData[field]}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded text-black"
           />
         ))}
 
@@ -130,7 +127,7 @@ const handleOtpVerify = async () => {
           name="gender"
           value={formData.gender}
           onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 rounded text-black"
         >
           <option value="">Select Gender</option>
           <option value="Male">Male</option>
@@ -142,7 +139,7 @@ const handleOtpVerify = async () => {
           name="time"
           value={formData.time}
           onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 rounded text-black"
         >
           <option value="Morning">Morning</option>
           <option value="Evening">Evening</option>
@@ -160,7 +157,7 @@ const handleOtpVerify = async () => {
             <input
               type="text"
               placeholder="Enter OTP received by doctor"
-              className="w-full p-2 border border-gray-300 rounded mt-4"
+              className="w-full p-2 border border-gray-300 rounded text-black mt-4"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
