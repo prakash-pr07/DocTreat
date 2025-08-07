@@ -4,6 +4,7 @@ import otpGenerator from "otp-generator";
 import nodemailer from "nodemailer";
 import User from "../models/userModel.js";
 import OTP from "../models/otpModel.js";
+import Admin from "../models/Admin.js";
 
 //==================Send OTP===================//
 export const sendOtp = async (req, res) => {
@@ -131,6 +132,10 @@ export const signup = async (req, res) => {
   }
 };
 
+
+
+
+
 //============== Login ==================//
 export const login = async (req, res) => {
   try {
@@ -144,10 +149,21 @@ export const login = async (req, res) => {
     }
 
     // Use "email" directly
-    const user = await User.findOne({
+    let user = await User.findOne({
       $or: [{ email: email }, { phone: email }],
     });
 
+    //==================================================//
+    let fromModel = "User";
+    // If not found, try Admin collection
+    if (!user) {
+      user = await Admin.findOne({ email: email });
+      fromModel = "Admin";
+    }
+    //===================================================//
+
+
+    // Still not found
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -193,6 +209,10 @@ export const login = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 
 // ================ Forgot Password ================= //
@@ -268,7 +288,6 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ message: "Failed to update password" });
   }
 };
-
 
 
 
